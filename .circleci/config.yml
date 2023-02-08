@@ -52,7 +52,7 @@ workflows:
           cron: "0 21 * * *" # JST 6:00
           filters:
             branches:
-              only: master
+              only: main
     jobs:
       - update_version
 
