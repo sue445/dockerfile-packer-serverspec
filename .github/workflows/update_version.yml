@@ -12,13 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Generate token
-        id: generate_token
-        uses: tibdex/github-app-token@v1
-        with:
-          app_id: ${{ secrets.GH_APP_ID }}
-          private_key: ${{ secrets.GH_PRIVATE_KEY }}
-
       - name: Setup git
         run: |
           git config push.default current
