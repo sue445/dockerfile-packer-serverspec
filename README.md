@@ -8,3 +8,10 @@ Dockerfile with Packer and Serverspec installed
 * https://www.packer.io/
 * https://github.com/unifio/packer-provisioner-serverspec
 * https://serverspec.org/
+
+## Usage
+```bash
+docker pull ghcr.io/sue445/packer-serverspec:latest
+```
+
+Image version tag is formatted like `${PACKER_VERSION}-${PACKER_PROVISIONER_SERVERSPEC_VERSION}` (e.g. `1.8.5-0.2.1`)
