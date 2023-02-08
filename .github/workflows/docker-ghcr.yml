@@ -32,7 +32,6 @@ jobs:
           images: |
             ghcr.io/sue445/packer-serverspec
           tags: |
-            type=sha,format=long
             type=edge,branch=main
             type=ref,event=tag
 
