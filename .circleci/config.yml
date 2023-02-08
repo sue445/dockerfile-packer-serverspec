@@ -41,7 +41,6 @@ jobs:
             git push origin --tags -f
             git push origin
 
-
       - slack/notify-on-failure
 
 workflows:
