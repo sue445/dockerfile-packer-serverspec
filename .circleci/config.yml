@@ -1,0 +1,66 @@
+version: 2.1
+
+orbs:
+  slack: circleci/slack@3
+
+jobs:
+  update_version:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+
+      - run:
+          name: Setup git
+          command: |
+            git config push.default current
+            git config user.name "CircleCI"
+            git config user.email circleci@example.com
+
+      - run:
+          name: Update VERSION
+          command: |
+            PACKER_VERSION=`curl -s https://api.github.com/repos/hashicorp/packer/tags | jq --raw-output .[0].name | sed -e 's/v//g'`
+            echo "PACKER_VERSION=${PACKER_VERSION}"
+
+            PACKER_PROVISIONER_SERVERSPEC_VERSION=`curl -s https://api.github.com/repos/unifio/packer-provisioner-serverspec/tags | jq --raw-output .[0].name | sed -e 's/v//g'`
+            echo "PACKER_PROVISIONER_SERVERSPEC_VERSION=${PACKER_PROVISIONER_SERVERSPEC_VERSION}"
+
+            sed -i -e "s/ENV PACKER_VERSION .*$/ENV PACKER_VERSION ${PACKER_VERSION}/g" Dockerfile
+            sed -i -e "s/ENV PACKER_PROVISIONER_SERVERSPEC_VERSION .*$/ENV PACKER_PROVISIONER_SERVERSPEC_VERSION ${PACKER_PROVISIONER_SERVERSPEC_VERSION}/g" Dockerfile
+
+            git add Dockerfile
+
+            export VERSION="${PACKER_VERSION}-${PACKER_PROVISIONER_SERVERSPEC_VERSION}"
+
+            set +e
+            git commit -m "Bump version ${VERSION} from CircleCI"
+            git tag -a ${VERSION} -m "Packer ${PACKER_VERSION}, packer-provisioner-serverspec ${PACKER_PROVISIONER_SERVERSPEC_VERSION}"
+            set -e
+
+            git push origin --tags -f
+            git push origin
+
+
+      - slack/notify-on-failure
+
+workflows:
+  version: 2
+
+  daily_update:
+    triggers:
+      - schedule:
+          cron: "0 21 * * *" # JST 6:00
+          filters:
+            branches:
+              only: master
+    jobs:
+      - update_version
+
+  manual_update:
+    jobs:
+      - hold:
+          type: approval
+      - update_version:
+          requires:
+            - hold
