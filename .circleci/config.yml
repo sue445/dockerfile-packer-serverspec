@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@3
+
 jobs:
   update_version:
     docker:
@@ -37,6 +40,9 @@ jobs:
 
             git push origin --tags -f
             git push origin
+
+
+      - slack/notify-on-failure
 
 workflows:
   version: 2
