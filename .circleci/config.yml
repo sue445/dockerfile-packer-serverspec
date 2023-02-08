@@ -12,7 +12,7 @@ jobs:
           command: |
             git config push.default current
             git config user.name "CircleCI"
-            git config user.email ${EMAIL}
+            git config user.email circleci@example.com
 
       - run:
           name: Update VERSION
