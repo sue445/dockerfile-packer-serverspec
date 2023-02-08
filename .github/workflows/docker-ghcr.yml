@@ -32,7 +32,6 @@ jobs:
           images: |
             ghcr.io/sue445/packer-serverspec
           tags: |
-            type=edge,branch=main
             type=ref,event=tag
 
       - name: Login to GHCR
