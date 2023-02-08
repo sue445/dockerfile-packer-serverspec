@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   update_version:
     docker:
-      - image: cimg/base
+      - image: cimg/base:current
     steps:
       - checkout
 
