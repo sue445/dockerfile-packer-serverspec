@@ -13,7 +13,7 @@ RUN wget https://github.com/unifio/packer-provisioner-serverspec/releases/downlo
 
 FROM ruby:3.2
 
-RUN mkdir -p -p /root/.packer.d/plugins && \
+RUN mkdir -p /root/.packer.d/plugins && \
     gem install --no-doc serverspec
 
 COPY --from=downloader /tmp/packer /usr/local/bin
