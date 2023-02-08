@@ -1,0 +1,82 @@
+name: update_version
+
+on:
+  schedule:
+    - cron: "0 19 * * *" # JST 4:00
+  workflow_dispatch:
+
+jobs:
+  update_version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.GH_APP_ID }}
+          private_key: ${{ secrets.GH_PRIVATE_KEY }}
+
+      - name: Setup git
+        run: |
+          git config push.default current
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+      - name: Update VERSION
+        run: |
+          PACKER_VERSION=`curl -s https://api.github.com/repos/hashicorp/packer/tags | jq --raw-output .[0].name | sed -e 's/v//g'`
+          echo "PACKER_VERSION=${PACKER_VERSION}"
+
+          PACKER_PROVISIONER_SERVERSPEC_VERSION=`curl -s https://api.github.com/repos/unifio/packer-provisioner-serverspec/tags | jq --raw-output .[0].name | sed -e 's/v//g'`
+          echo "PACKER_PROVISIONER_SERVERSPEC_VERSION=${PACKER_PROVISIONER_SERVERSPEC_VERSION}"
+
+          sed -i -e "s/ENV PACKER_VERSION .*$/ENV PACKER_VERSION ${PACKER_VERSION}/g" Dockerfile
+          sed -i -e "s/ENV PACKER_PROVISIONER_SERVERSPEC_VERSION .*$/ENV PACKER_PROVISIONER_SERVERSPEC_VERSION ${PACKER_PROVISIONER_SERVERSPEC_VERSION}/g" Dockerfile
+          git add Dockerfile
+
+          export VERSION="${PACKER_VERSION}-${PACKER_PROVISIONER_SERVERSPEC_VERSION}"
+
+          set +e
+          git commit -m "Bump version ${VERSION} from GitHub Actions"
+          git tag -a ${VERSION} -m "Packer ${PACKER_VERSION}, packer-provisioner-serverspec ${PACKER_PROVISIONER_SERVERSPEC_VERSION}"
+          git push origin --tags
+          set -e
+
+          git push origin
+
+      - name: Slack Notification (not success)
+        uses: lazy-actions/slatify@master
+        if: "! success()"
+        continue-on-error: true
+        with:
+          job_name: '*update_version*'
+          type: ${{ job.status }}
+          icon_emoji: ":octocat:"
+          url: ${{ secrets.SLACK_WEBHOOK }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    needs:
+      - update_version
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: docker-compose --file docker-compose.test.yml build
+      - run: docker-compose --file docker-compose.test.yml run sut
+
+      - name: Slack Notification (not success)
+        uses: lazy-actions/slatify@master
+        if: "! success()"
+        continue-on-error: true
+        with:
+          job_name: '*build*'
+          type: ${{ job.status }}
+          icon_emoji: ":octocat:"
+          url: ${{ secrets.SLACK_WEBHOOK }}
+          token: ${{ secrets.GITHUB_TOKEN }}
