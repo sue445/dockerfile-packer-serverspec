@@ -61,10 +61,10 @@ workflows:
     jobs:
       - update_version
 
-  manual_update:
-    jobs:
-      - hold:
-          type: approval
-      - update_version:
-          requires:
-            - hold
+  # manual_update:
+  #   jobs:
+  #     - hold:
+  #         type: approval
+  #     - update_version:
+  #         requires:
+  #          - hold
