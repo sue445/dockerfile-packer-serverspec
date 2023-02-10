@@ -2,7 +2,7 @@ FROM alpine AS downloader
 
 WORKDIR /tmp
 
-ENV PACKER_VERSION 1.8.5
+ENV PACKER_VERSION 1.9.0-alpha
 ENV PACKER_PROVISIONER_SERVERSPEC_VERSION 0.2.1
 
 RUN wget https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip && \
