@@ -23,6 +23,11 @@ jobs:
             PACKER_VERSION=`curl -s https://api.github.com/repos/hashicorp/packer/tags | jq --raw-output .[0].name | sed -e 's/v//g'`
             echo "PACKER_VERSION=${PACKER_VERSION}"
 
+            if [[ ${PACKER_VERSION} =~ [a-z]+ ]]; then
+              echo "${PACKER_VERSION} isn't stable version"
+              exit 0
+            fi
+
             PACKER_PROVISIONER_SERVERSPEC_VERSION=`curl -s https://api.github.com/repos/unifio/packer-provisioner-serverspec/tags | jq --raw-output .[0].name | sed -e 's/v//g'`
             echo "PACKER_PROVISIONER_SERVERSPEC_VERSION=${PACKER_PROVISIONER_SERVERSPEC_VERSION}"
 
