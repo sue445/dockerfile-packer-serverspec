@@ -1,3 +1,5 @@
+ARG RUBY_VERSION=4.0
+
 FROM alpine AS downloader
 
 WORKDIR /tmp
@@ -11,7 +13,7 @@ RUN wget https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER
 RUN wget https://github.com/unifio/packer-provisioner-serverspec/releases/download/v${PACKER_PROVISIONER_SERVERSPEC_VERSION}/packer-provisioner-serverspec_${PACKER_PROVISIONER_SERVERSPEC_VERSION}_linux_amd64.tar.gz && \
     tar -zxf packer-provisioner-serverspec_${PACKER_PROVISIONER_SERVERSPEC_VERSION}_linux_amd64.tar.gz
 
-FROM ruby:4.0
+FROM ruby:${RUBY_VERSION}
 
 RUN mkdir -p /root/.packer.d/plugins && \
     gem install --no-doc serverspec
