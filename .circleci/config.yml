@@ -31,8 +31,8 @@ jobs:
             PACKER_PROVISIONER_SERVERSPEC_VERSION=`curl -s https://api.github.com/repos/unifio/packer-provisioner-serverspec/tags | jq --raw-output .[0].name | sed -e 's/v//g'`
             echo "PACKER_PROVISIONER_SERVERSPEC_VERSION=${PACKER_PROVISIONER_SERVERSPEC_VERSION}"
 
-            sed -i -e "s/ENV PACKER_VERSION .*$/ENV PACKER_VERSION ${PACKER_VERSION}/g" Dockerfile
-            sed -i -e "s/ENV PACKER_PROVISIONER_SERVERSPEC_VERSION .*$/ENV PACKER_PROVISIONER_SERVERSPEC_VERSION ${PACKER_PROVISIONER_SERVERSPEC_VERSION}/g" Dockerfile
+            sed -i -e "s/ENV PACKER_VERSION=.*$/ENV PACKER_VERSION=${PACKER_VERSION}/g" Dockerfile
+            sed -i -e "s/ENV PACKER_PROVISIONER_SERVERSPEC_VERSION=.*$/ENV PACKER_PROVISIONER_SERVERSPEC_VERSION=${PACKER_PROVISIONER_SERVERSPEC_VERSION}/g" Dockerfile
 
             git add Dockerfile
 
