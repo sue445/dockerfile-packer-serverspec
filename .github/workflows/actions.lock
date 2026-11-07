@@ -10,6 +10,7 @@ workflows:
         - 'docker/build-push-action@v7.4.0'
         - 'docker/login-action@v4.7.0'
         - 'docker/metadata-action@v6.2.0'
+    '.github/workflows/verify-actions-lockfile.yml': []
 dependencies:
     'act10ns/slack@v2.2.0':
         ref: 'v2.2.0'
