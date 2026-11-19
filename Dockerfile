@@ -1,4 +1,4 @@
-ARG RUBY_VERSION=4.0
+ARG RUBY_VERSION=4.0.10
 
 FROM alpine AS downloader
 
